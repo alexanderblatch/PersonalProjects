@@ -1,0 +1,132 @@
+import java.awt.GridLayout;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
+
+
+public class Converter {
+
+	public static void main(String[] args) {
+		
+		//Creation of program window
+		JFrame WinFrame = new JFrame("Converter");
+		
+		//Creation and alignment of a text field for user input.
+		final JTextField InputField = new JTextField("");
+		InputField.setHorizontalAlignment(SwingConstants.CENTER);
+		
+		//Creation and alignment of a text field for user input.
+		final JTextField AnswerField = new JTextField("");
+		AnswerField.setHorizontalAlignment(SwingConstants.CENTER);
+		
+		//Creation and alignment of a text label.
+		JLabel Title = new JLabel("Enter a value:");
+		Title.setVerticalAlignment(SwingConstants.CENTER);
+		Title.setHorizontalAlignment(SwingConstants.CENTER);
+		
+		//Creation and alignment of a text label.
+		JLabel Result = new JLabel("Result:");
+		Result.setVerticalAlignment(SwingConstants.CENTER);
+		Result.setHorizontalAlignment(SwingConstants.CENTER);
+		
+		//Creation and alignment of a button.
+		JButton EntButton = new JButton("Calculate");
+		EntButton.setVerticalAlignment(SwingConstants.CENTER);
+		
+		//Creation of an array to be used for populating the following list.
+		final String[] converChoices = {"°C --> °F", "°F --> °C", "m --> km", "km --> m", "cm --> m", "m --> cm", "lbs --> oz.",
+				"oz. --> lbs", "st --> kg", "kg --> st"};
+		
+		//Creation and alignment of a list, which is initialised
+		// to show the value of the first index in the above array.
+		final JList<String> converList = new JList<String>(converChoices);
+		converList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		converList.setSelectedIndex(0);
+		
+		//Creation of a scrollable viewport of the above list.
+		JScrollPane scrollPane = new JScrollPane(converList);
+		scrollPane.getViewport().setView(converList);
+		
+		//Creation of the panel making up the contents of the window.
+		JPanel p = new JPanel(new GridLayout(3, 1, 1, 8));
+		p.add(Title);
+		p.add(InputField);
+		p.add(Result);
+		p.add(AnswerField);
+		p.add(scrollPane);
+		//p.add(converList); 	//Code removed from use as above ScrollPane makes it redundant.
+		p.add(EntButton);
+		WinFrame.setContentPane(p);
+		WinFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		WinFrame.setSize(300, 200);
+		WinFrame.setLocationRelativeTo(null);
+		WinFrame.setVisible(true);
+		
+		//Creation of an ActionListener to call the 'buttonPress'
+		// method whenever 'EntButton' is activated.
+		EntButton.addActionListener(new ActionListener() {
+			
+			//Creation of 'buttonPress' method, carries out a calculation based on 
+			// the various inputs and currently tries to print an answer to console.
+			public void actionPerformed(ActionEvent buttonPress) { 
+				try{
+					Double a;
+					Double b;
+					int selected = converList.getSelectedIndex();
+					String Conver = converChoices[selected];
+					String txt = InputField.getText();
+					b = Double.parseDouble(txt);
+					switch (Conver) {
+					case "°C --> °F":
+						a = ((b*1.8) + 32);
+						break;
+					case "°F --> °C":
+						a = ((b - 32) / 1.8);
+						break;
+					case "m --> km":
+						a = (b/1000);
+						break;
+					case "km --> m":
+						a = (b*1000);
+						break;
+					case "cm --> m":
+						a = (b/100);
+						break;
+					case "m --> cm":
+						a = (b*100);
+						break;
+					case "lbs --> oz.":
+						a = (b*16);
+						break;
+					case "oz. --> lbs":
+						a = (b/16);
+						break;
+					case "st --> kg":
+						a = (b*6.35029);
+						break;
+					case "kg --> st":
+						a = (b/6.35029);
+						break;
+					default:
+						a = null;
+					}
+					AnswerField.setText("" + a);
+				} catch (Exception ex) {
+					AnswerField.setText("Error!");
+				  }
+			}
+		});
+				
+	}
+		
+}
+
+
