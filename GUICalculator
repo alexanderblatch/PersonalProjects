@@ -1,0 +1,383 @@
+import java.awt.EventQueue;
+
+import javax.swing.JFrame;
+import java.awt.GridBagLayout;
+import javax.swing.JButton;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import javax.swing.JTextPane;
+
+
+public class Calculator_UI_Build {
+
+	private JFrame frmCalculator;
+	private JButton subtractBtn;
+	private JButton multiplyBtn;
+	private JButton addBtn;
+	private JButton B7;
+	private JButton B8;
+	private JButton B9;
+	private JButton backspaceBtn;
+	private JButton B4;
+	private JButton B5;
+	private JButton B6;
+	private JButton cancelBtn;
+	private JButton B1;
+	private JButton B2;
+	private JButton B3;
+	private JButton B0;
+	private JButton decimalBtn;
+	private JButton equalBtn;
+	private JTextPane outputPane;
+
+	String calcText;
+	String storedText = "";
+	String operator;
+	String currentText = "";
+	Double answer;
+	
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					Calculator_UI_Build window = new Calculator_UI_Build();
+					window.frmCalculator.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	/**
+	 * Create the application.
+	 */
+	public Calculator_UI_Build() {
+		initialize();
+	}
+
+	/**
+	 * Initialise the contents of the frame.
+	 */
+	private void initialize() {
+		frmCalculator = new JFrame();
+		frmCalculator.setResizable(false);
+		frmCalculator.setTitle("Calculator");
+		frmCalculator.setBounds(100, 100, 188, 283);
+		frmCalculator.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		GridBagLayout gridBagLayout = new GridBagLayout();
+		gridBagLayout.columnWidths = new int[]{44, 44, 44, 44, 0};
+		gridBagLayout.rowHeights = new int[]{50, 44, 44, 44, 44, 22, 0};
+		gridBagLayout.columnWeights = new double[]{0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		frmCalculator.getContentPane().setLayout(gridBagLayout);
+		
+		outputPane = new JTextPane();
+		outputPane.setEditable(false);
+		GridBagConstraints gbc_outputPane = new GridBagConstraints();
+		gbc_outputPane.gridwidth = 4;
+		gbc_outputPane.insets = new Insets(0, 0, 5, 0);
+		gbc_outputPane.fill = GridBagConstraints.BOTH;
+		gbc_outputPane.gridx = 0;
+		gbc_outputPane.gridy = 0;
+		frmCalculator.getContentPane().add(outputPane, gbc_outputPane);
+		
+		
+		JButton divideBtn = new JButton("/");
+		divideBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				operator = "/";
+				storedText = currentText;
+				currentText = "";
+				outputPane.setText(storedText + " / " + currentText);
+			}
+		});
+		GridBagConstraints gbc_divideBtn = new GridBagConstraints();
+		gbc_divideBtn.fill = GridBagConstraints.BOTH;
+		gbc_divideBtn.insets = new Insets(0, 0, 5, 5);
+		gbc_divideBtn.gridx = 0;
+		gbc_divideBtn.gridy = 1;
+		frmCalculator.getContentPane().add(divideBtn, gbc_divideBtn);
+		
+		multiplyBtn = new JButton("*");
+		multiplyBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				operator = "*";
+				storedText = currentText;
+				currentText = "";
+				outputPane.setText(storedText + " * " + currentText);
+			}
+		});
+		GridBagConstraints gbc_multiplyBtn = new GridBagConstraints();
+		gbc_multiplyBtn.fill = GridBagConstraints.BOTH;
+		gbc_multiplyBtn.insets = new Insets(0, 0, 5, 5);
+		gbc_multiplyBtn.gridx = 1;
+		gbc_multiplyBtn.gridy = 1;
+		frmCalculator.getContentPane().add(multiplyBtn, gbc_multiplyBtn);
+		
+		addBtn = new JButton("+");
+		addBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				operator = "+";
+				storedText = currentText;
+				currentText = "";
+				outputPane.setText(storedText + " + " + currentText);
+			}
+		});
+		GridBagConstraints gbc_addBtn = new GridBagConstraints();
+		gbc_addBtn.fill = GridBagConstraints.BOTH;
+		gbc_addBtn.insets = new Insets(0, 0, 5, 5);
+		gbc_addBtn.gridx = 2;
+		gbc_addBtn.gridy = 1;
+		frmCalculator.getContentPane().add(addBtn, gbc_addBtn);
+		
+		subtractBtn = new JButton("-");
+		subtractBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				operator = "-";
+				storedText = currentText;
+				currentText = "";
+				outputPane.setText(storedText + " - " + currentText);
+			}
+		});
+		GridBagConstraints gbc_subtractBtn = new GridBagConstraints();
+		gbc_subtractBtn.fill = GridBagConstraints.BOTH;
+		gbc_subtractBtn.insets = new Insets(0, 0, 5, 0);
+		gbc_subtractBtn.gridx = 3;
+		gbc_subtractBtn.gridy = 1;
+		frmCalculator.getContentPane().add(subtractBtn, gbc_subtractBtn);
+		
+		B7 = new JButton("7");
+		B7.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				outputPane.setText(currentText + "7");
+				currentText = outputPane.getText();
+			}
+		});
+		GridBagConstraints gbc_B7 = new GridBagConstraints();
+		gbc_B7.fill = GridBagConstraints.BOTH;
+		gbc_B7.insets = new Insets(0, 0, 5, 5);
+		gbc_B7.gridx = 0;
+		gbc_B7.gridy = 2;
+		frmCalculator.getContentPane().add(B7, gbc_B7);
+		
+		B8 = new JButton("8");
+		B8.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				outputPane.setText(currentText + "8");
+				currentText = outputPane.getText();
+			}
+		});
+		GridBagConstraints gbc_B8 = new GridBagConstraints();
+		gbc_B8.fill = GridBagConstraints.BOTH;
+		gbc_B8.insets = new Insets(0, 0, 5, 5);
+		gbc_B8.gridx = 1;
+		gbc_B8.gridy = 2;
+		frmCalculator.getContentPane().add(B8, gbc_B8);
+		
+		B9 = new JButton("9");
+		B9.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				outputPane.setText(currentText + "9");
+				currentText = outputPane.getText();
+			}
+		});
+		GridBagConstraints gbc_B9 = new GridBagConstraints();
+		gbc_B9.fill = GridBagConstraints.BOTH;
+		gbc_B9.insets = new Insets(0, 0, 5, 5);
+		gbc_B9.gridx = 2;
+		gbc_B9.gridy = 2;
+		frmCalculator.getContentPane().add(B9, gbc_B9);
+		
+		backspaceBtn = new JButton("B");
+		backspaceBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+				outputPane.setText(currentText.substring(0, currentText.length() - 1));
+				currentText = outputPane.getText();
+				} catch (Exception ex) {
+					outputPane.setText("");
+					currentText = outputPane.getText();
+				}
+			}
+		});
+		GridBagConstraints gbc_backspaceBtn = new GridBagConstraints();
+		gbc_backspaceBtn.fill = GridBagConstraints.BOTH;
+		gbc_backspaceBtn.insets = new Insets(0, 0, 5, 0);
+		gbc_backspaceBtn.gridx = 3;
+		gbc_backspaceBtn.gridy = 2;
+		frmCalculator.getContentPane().add(backspaceBtn, gbc_backspaceBtn);
+		
+		B4 = new JButton("4");
+		B4.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				outputPane.setText(currentText + "4");
+				currentText = outputPane.getText();
+			}
+		});
+		GridBagConstraints gbc_B4 = new GridBagConstraints();
+		gbc_B4.fill = GridBagConstraints.BOTH;
+		gbc_B4.insets = new Insets(0, 0, 5, 5);
+		gbc_B4.gridx = 0;
+		gbc_B4.gridy = 3;
+		frmCalculator.getContentPane().add(B4, gbc_B4);
+		
+		B5 = new JButton("5");
+		B5.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				outputPane.setText(currentText + "5");
+				currentText = outputPane.getText();
+			}
+		});
+		GridBagConstraints gbc_B5 = new GridBagConstraints();
+		gbc_B5.fill = GridBagConstraints.BOTH;
+		gbc_B5.insets = new Insets(0, 0, 5, 5);
+		gbc_B5.gridx = 1;
+		gbc_B5.gridy = 3;
+		frmCalculator.getContentPane().add(B5, gbc_B5);
+		
+		B6 = new JButton("6");
+		B6.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				outputPane.setText(currentText + "6");
+				currentText = outputPane.getText();
+			}
+		});
+		GridBagConstraints gbc_B6 = new GridBagConstraints();
+		gbc_B6.fill = GridBagConstraints.BOTH;
+		gbc_B6.insets = new Insets(0, 0, 5, 5);
+		gbc_B6.gridx = 2;
+		gbc_B6.gridy = 3;
+		frmCalculator.getContentPane().add(B6, gbc_B6);
+		
+		cancelBtn = new JButton("C");
+		cancelBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				outputPane.setText("");
+				currentText = outputPane.getText();
+			}
+		});
+		GridBagConstraints gbc_cancelBtn = new GridBagConstraints();
+		gbc_cancelBtn.fill = GridBagConstraints.BOTH;
+		gbc_cancelBtn.insets = new Insets(0, 0, 5, 0);
+		gbc_cancelBtn.gridx = 3;
+		gbc_cancelBtn.gridy = 3;
+		frmCalculator.getContentPane().add(cancelBtn, gbc_cancelBtn);
+		
+		B1 = new JButton("1");
+		B1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				outputPane.setText(currentText + "1");
+				currentText = outputPane.getText();
+			}
+		});
+		GridBagConstraints gbc_B1 = new GridBagConstraints();
+		gbc_B1.fill = GridBagConstraints.BOTH;
+		gbc_B1.insets = new Insets(0, 0, 5, 5);
+		gbc_B1.gridx = 0;
+		gbc_B1.gridy = 4;
+		frmCalculator.getContentPane().add(B1, gbc_B1);
+		
+		B2 = new JButton("2");
+		B2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				outputPane.setText(currentText + "2");
+				currentText = outputPane.getText();
+			}
+		});
+		GridBagConstraints gbc_B2 = new GridBagConstraints();
+		gbc_B2.fill = GridBagConstraints.BOTH;
+		gbc_B2.insets = new Insets(0, 0, 5, 5);
+		gbc_B2.gridx = 1;
+		gbc_B2.gridy = 4;
+		frmCalculator.getContentPane().add(B2, gbc_B2);
+		
+		B3 = new JButton("3");
+		B3.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				outputPane.setText(currentText + "3");
+				currentText = outputPane.getText();
+			}
+		});
+		GridBagConstraints gbc_B3 = new GridBagConstraints();
+		gbc_B3.fill = GridBagConstraints.BOTH;
+		gbc_B3.insets = new Insets(0, 0, 5, 5);
+		gbc_B3.gridx = 2;
+		gbc_B3.gridy = 4;
+		frmCalculator.getContentPane().add(B3, gbc_B3);
+		
+		decimalBtn = new JButton(".");
+		decimalBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				outputPane.setText(currentText + ".");
+				currentText = outputPane.getText();
+			}
+		});
+		GridBagConstraints gbc_decimalBtn = new GridBagConstraints();
+		gbc_decimalBtn.fill = GridBagConstraints.BOTH;
+		gbc_decimalBtn.insets = new Insets(0, 0, 5, 0);
+		gbc_decimalBtn.gridx = 3;
+		gbc_decimalBtn.gridy = 4;
+		frmCalculator.getContentPane().add(decimalBtn, gbc_decimalBtn);
+		
+		B0 = new JButton("0");
+		B0.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				outputPane.setText(currentText + "0");
+				currentText = outputPane.getText();
+			}
+		});
+		GridBagConstraints gbc_B0 = new GridBagConstraints();
+		gbc_B0.anchor = GridBagConstraints.NORTH;
+		gbc_B0.fill = GridBagConstraints.HORIZONTAL;
+		gbc_B0.gridwidth = 2;
+		gbc_B0.insets = new Insets(0, 0, 0, 5);
+		gbc_B0.gridx = 0;
+		gbc_B0.gridy = 5;
+		frmCalculator.getContentPane().add(B0, gbc_B0);
+		
+		equalBtn = new JButton("=");
+		equalBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+				Double firstNumber = Double.parseDouble(storedText);
+				Double secondNumber = Double.parseDouble(currentText);
+				switch (operator){
+				case "*":
+					answer = (firstNumber * secondNumber);
+					break;
+				case "/":
+					answer = (firstNumber / secondNumber);
+					break;
+				case "-":
+					answer = (firstNumber - secondNumber);
+					break;
+				case "+":
+					answer = (firstNumber + secondNumber);
+					break;
+				default: answer = null;
+					break;
+				}
+			outputPane.setText("= " + Double.toString(answer));
+			calcText = outputPane.getText();
+			currentText = calcText.substring(calcText.length() - (calcText.length() - 2));
+		} catch (Exception ex) { 
+			outputPane.setText("");
+		}
+			}});
+		GridBagConstraints gbc_equalBtn = new GridBagConstraints();
+		gbc_equalBtn.anchor = GridBagConstraints.NORTH;
+		gbc_equalBtn.gridwidth = 2;
+		gbc_equalBtn.fill = GridBagConstraints.HORIZONTAL;
+		gbc_equalBtn.gridx = 2;
+		gbc_equalBtn.gridy = 5;
+		frmCalculator.getContentPane().add(equalBtn, gbc_equalBtn);
+	}
+
+}
+
