@@ -1,0 +1,35 @@
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.util.ArrayList;
+
+
+public class DH_LoginChecker {
+	
+		ArrayList<UserDetails> userList = new ArrayList<UserDetails>();
+		int listCount = 0;
+		private String delims = "[,]+";
+		private BufferedReader br = null;
+		
+		
+		public DH_LoginChecker(ArrayList<UserDetails> userList) {
+		
+		userList.add(new UserDetails("Bruce Lee", "Be Water", "Admin", listCount));
+		
+		try {
+			br = new BufferedReader(new FileReader("loginDetails.txt"));
+			while (br.readLine() != null && br.readLine().contains("Record:") == true) {
+				listCount++;
+				String rawRecord = br.readLine();
+				String[] parsedRecord = rawRecord.split(delims);
+				userList.add(new UserDetails(parsedRecord[0], parsedRecord[1], parsedRecord[2], listCount));
+			}
+		}
+		catch (Exception IOException) {
+				System.out.println("There was an error accessing the file.");
+		}
+		this.userList = userList;
+	}
+		public ArrayList<UserDetails> getUserList() {
+			return userList;
+		}
+}
