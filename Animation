@@ -1,0 +1,194 @@
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JPanel;
+import javax.swing.BorderFactory;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import javax.swing.SwingUtilities;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseMotionAdapter;
+
+
+
+public class Painty {
+	public static void main(String[] args) {
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				createAndShowGUI(); 
+				}
+		});
+	}
+private static void createAndShowGUI() {
+	System.out.println("Created GUI on EDI? " + 
+	SwingUtilities.isEventDispatchThread());
+	JFrame f = new JFrame("Painty");
+	f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	f.add(new MyPanel());
+	f.pack();
+	f.setVisible(true);
+	}
+}
+@SuppressWarnings("serial")
+class MyPanel extends JPanel {
+	
+	RedOval redOval = new RedOval();
+	Animation animation = new Animation();
+	
+	public MyPanel() {
+		setBorder(BorderFactory.createLineBorder(Color.black));
+		
+		addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent e) {
+			moveOval(e.getX(), e.getY());
+		}
+	});
+	
+		addMouseListener( new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				moveAnimation(e.getX(),e.getY());
+				animation.run();
+			}
+		});
+	addMouseMotionListener(new MouseAdapter() {
+		public void mouseMoved(MouseEvent e) {
+			moveOval(e.getX(),e.getY());
+		}
+	});
+}
+
+private void moveOval(int x, int y) {
+	
+	final int CURR_X = redOval.getX();
+	final int CURR_Y = redOval.getY();
+	final int CURR_W = redOval.getWidth();
+	final int CURR_H = redOval.getHeight();
+	final int OFFSET = 1;
+	
+	if ((CURR_X!=x) || (CURR_Y!=y)) {
+		repaint(CURR_X, CURR_Y, CURR_W + OFFSET, CURR_H + OFFSET);
+		redOval.setX(x);
+		redOval.setY(y);
+		repaint(redOval.getX(), redOval.getY(), redOval.getWidth() + OFFSET, redOval.getHeight() + OFFSET);
+	}
+}
+
+private void moveAnimation(int x, int y) {
+	final int OFFSET = 1;
+		animation.setX(x);
+		animation.setY(y);
+		repaint(animation.getX(), animation.getY(), animation.getWidth() + OFFSET, animation.getHeight() + OFFSET);
+	}
+
+
+	public Dimension getPreferredSize() {
+		return new Dimension(800,600);
+}
+	public void paintComponent (Graphics g) {
+		super.paintComponent(g);
+		redOval.paintOval(g);
+		animation.paintAnimation(g);
+	}
+}
+
+class RedOval {
+	private int xPos;
+    private int yPos;
+    private int width = 20;
+    private int height = 20;
+    
+    public void setX (int xPos) {
+    	this.xPos = xPos -10;
+	}
+
+    public void setY(int yPos) {
+		this.yPos = yPos -10;
+	}
+
+	public int getX() {
+    	return xPos;
+    }
+    public int getY() {
+    	return yPos;
+    }
+    public int getWidth() {
+    	return width;
+    }
+    public int getHeight() {
+    	return height;
+    }
+    
+    public void paintOval(Graphics g) {
+    	g.setColor (Color.RED);
+    	g.fillOval(xPos,yPos,width,height);
+        g.setColor(Color.BLACK);
+        g.drawOval(xPos,yPos,width,height);  
+    }
+}
+
+class Animation implements Runnable {
+	
+	private Thread t;
+	private int xPos;
+	private int yPos;
+	private int width = 60;
+	private int height = 60;
+	
+	public void setX (int xPos) {
+	this.xPos = xPos -30;
+}
+	 
+	public void setY(int yPos) {
+	this.yPos = yPos -30;
+}
+	public int getX() {
+    	return xPos;
+    }
+    public int getY() {
+    	return yPos;
+    }
+    public int getWidth() {
+    	return width;
+    }
+    public int getHeight() {
+    	return height;
+    }
+	
+	public void paintAnimation(Graphics g) {
+		try{
+			while (width > 0) {
+				g.setColor(Color.YELLOW);
+				g.fillRect(xPos, yPos, width, height);
+				g.setColor(Color.BLACK);
+				g.drawRect(xPos, yPos, width, height);
+				width = width - 1;
+				height = height - 1;
+				Thread.sleep(33);
+			}
+		} catch (InterruptedException ex) {
+			Thread.currentThread().interrupt();
+			}
+		}
+
+	public void start(Graphics g) {
+		try{
+			while (width > 0) {
+				g.setColor(Color.YELLOW);
+				g.fillRect(xPos, yPos, width, height);
+				g.setColor(Color.BLACK);
+				g.drawRect(xPos, yPos, width, height);
+				width = width - 1;
+				height = height - 1;
+				Thread.sleep(33);
+			}
+		} catch (InterruptedException ex) {
+			Thread.currentThread().interrupt();
+			}
+		}
+	public void run () {
+		t.start();
+	}
+}
