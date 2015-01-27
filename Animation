@@ -3,6 +3,7 @@ import javax.swing.JPanel;
 import javax.swing.JPanel;
 import javax.swing.BorderFactory;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import javax.swing.SwingUtilities;
@@ -50,7 +51,7 @@ class MyPanel extends JPanel {
 		addMouseListener( new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				moveAnimation(e.getX(),e.getY());
-				animation.run();
+				animation.start();
 			}
 		});
 	addMouseMotionListener(new MouseAdapter() {
@@ -62,17 +63,21 @@ class MyPanel extends JPanel {
 
 private void moveOval(int x, int y) {
 	
-	final int CURR_X = redOval.getX();
-	final int CURR_Y = redOval.getY();
-	final int CURR_W = redOval.getWidth();
-	final int CURR_H = redOval.getHeight();
+	final int Current_X = redOval.getX();
+	final int Current_Y = redOval.getY();
+	final int Current_W = redOval.getWidth();
+	final int Current_H = redOval.getHeight();
 	final int OFFSET = 1;
 	
-	if ((CURR_X!=x) || (CURR_Y!=y)) {
-		repaint(CURR_X, CURR_Y, CURR_W + OFFSET, CURR_H + OFFSET);
+	if ((Current_X!=x) || (Current_Y!=y)) {
+		repaint(Current_X, Current_Y, Current_W + OFFSET, Current_H + OFFSET);
 		redOval.setX(x);
 		redOval.setY(y);
 		repaint(redOval.getX(), redOval.getY(), redOval.getWidth() + OFFSET, redOval.getHeight() + OFFSET);
+	}
+	long Time = System.currentTimeMillis();
+	if (Time != System.currentTimeMillis()) {
+		repaint(Current_X, Current_Y, Current_W + OFFSET, Current_H + OFFSET);
 	}
 }
 
@@ -156,8 +161,12 @@ class Animation implements Runnable {
     public int getHeight() {
     	return height;
     }
-	
+    
 	public void paintAnimation(Graphics g) {
+		int PosX = xPos;
+		int PosY = yPos;
+		width = 60;
+		height = 60;
 		try{
 			while (width > 0) {
 				g.setColor(Color.YELLOW);
@@ -166,29 +175,18 @@ class Animation implements Runnable {
 				g.drawRect(xPos, yPos, width, height);
 				width = width - 1;
 				height = height - 1;
-				Thread.sleep(33);
+				Thread.sleep(0);
 			}
 		} catch (InterruptedException ex) {
 			Thread.currentThread().interrupt();
 			}
 		}
+    
+	public void run() {
 
-	public void start(Graphics g) {
-		try{
-			while (width > 0) {
-				g.setColor(Color.YELLOW);
-				g.fillRect(xPos, yPos, width, height);
-				g.setColor(Color.BLACK);
-				g.drawRect(xPos, yPos, width, height);
-				width = width - 1;
-				height = height - 1;
-				Thread.sleep(33);
-			}
-		} catch (InterruptedException ex) {
-			Thread.currentThread().interrupt();
-			}
 		}
-	public void run () {
+	public void start () {
+		t = new Thread(this);
 		t.start();
 	}
 }
