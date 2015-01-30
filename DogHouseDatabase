@@ -1,0 +1,305 @@
+import java.awt.EventQueue;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JTextField;
+import java.awt.GridBagLayout;
+import javax.swing.JButton;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
+import javax.swing.SwingConstants;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+
+public class DH_WelcomeScrn {
+	
+	private JFrame frmWelcome;
+	private JFrame frmLogin;
+	public JFrame frmMain;
+	private JTextField userField;
+	private JTextField passField;
+	public JTextField incFilterField;
+	public JTextField excFilterField;
+	
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					DH_WelcomeScrn window = new DH_WelcomeScrn();
+					window.frmWelcome.setLocationRelativeTo(null);
+					window.frmWelcome.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+	public DH_WelcomeScrn() {
+		initializeWelcomeFrame();
+	}
+	private void initializeWelcomeFrame() {
+		frmWelcome = new JFrame();
+		frmWelcome.setResizable(false);
+		frmWelcome.setTitle("Dog House Database");
+		frmWelcome.setBounds(100, 100, 800, 600);
+		frmWelcome.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		GridBagLayout gridBagLayout = new GridBagLayout();
+		gridBagLayout.columnWidths = new int[]{325, 150, 325, 0};
+		gridBagLayout.rowHeights = new int[]{179, 248, 79, 0};
+		gridBagLayout.columnWeights = new double[]{0.0, 0.0, 0.0, Double.MIN_VALUE};
+		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, Double.MIN_VALUE};
+		frmWelcome.getContentPane().setLayout(gridBagLayout);
+		
+		JLabel lblBarkingmadDog = new JLabel("<html><body><font size = 7>.: Barking-Mad Dog Kennels :.</font></body></html> \n Welcome!");
+		lblBarkingmadDog.setVerticalAlignment(SwingConstants.CENTER);
+		lblBarkingmadDog.setHorizontalAlignment(SwingConstants.CENTER);
+		GridBagConstraints gbc_lblBarkingmadDog = new GridBagConstraints();
+		gbc_lblBarkingmadDog.fill = GridBagConstraints.HORIZONTAL;
+		gbc_lblBarkingmadDog.gridwidth = 3;
+		gbc_lblBarkingmadDog.insets = new Insets(0, 0, 5, 0);
+		gbc_lblBarkingmadDog.gridx = 0;
+		gbc_lblBarkingmadDog.gridy = 0;
+		frmWelcome.getContentPane().add(lblBarkingmadDog, gbc_lblBarkingmadDog);
+		
+		JLabel lblWelcome = new JLabel("<html><body><font size = 4>Welcome!</font></body></html>");
+		lblWelcome.setVerticalAlignment(SwingConstants.TOP);
+		GridBagConstraints gbc_lblWelcome = new GridBagConstraints();
+		gbc_lblWelcome.anchor = GridBagConstraints.NORTH;
+		gbc_lblWelcome.insets = new Insets(0, 0, 5, 5);
+		gbc_lblWelcome.gridx = 1;
+		gbc_lblWelcome.gridy = 1;
+		frmWelcome.getContentPane().add(lblWelcome, gbc_lblWelcome);
+		
+		JButton btnEnter = new JButton("Enter");
+		btnEnter.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					initializeLoginFrame();
+					Thread.sleep(200);
+					frmWelcome.dispose();
+				} catch (InterruptedException e1) {
+					e1.printStackTrace();
+				}
+			}
+		});
+		GridBagConstraints gbc_btnEnter = new GridBagConstraints();
+		gbc_btnEnter.fill = GridBagConstraints.BOTH;
+		gbc_btnEnter.insets = new Insets(0, 0, 0, 5);
+		gbc_btnEnter.gridx = 1;
+		gbc_btnEnter.gridy = 2;
+		frmWelcome.getContentPane().add(btnEnter, gbc_btnEnter);
+	}
+	private void initializeLoginFrame() {
+		frmLogin = new JFrame();
+		frmLogin.setResizable(false);
+		frmLogin.setBounds(100, 100, 800, 600);
+		frmLogin.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		GridBagLayout gridBagLayout = new GridBagLayout();
+		gridBagLayout.columnWidths = new int[]{351, 134, 348, 0};
+		gridBagLayout.rowHeights = new int[]{179, 123, 0, 0, 91, 0};
+		gridBagLayout.columnWeights = new double[]{0.0, 1.0, 0.0, Double.MIN_VALUE};
+		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		frmLogin.getContentPane().setLayout(gridBagLayout);
+		frmLogin.setLocationRelativeTo(frmWelcome);
+		frmLogin.setVisible(true);
+		
+		JLabel lblBarkingmadDog = new JLabel("<html><body><font size = 7>.: Log-In Page :.</font></body></html>");
+		lblBarkingmadDog.setHorizontalAlignment(SwingConstants.CENTER);
+		GridBagConstraints gbc_lblBarkingmadDog = new GridBagConstraints();
+		gbc_lblBarkingmadDog.fill = GridBagConstraints.HORIZONTAL;
+		gbc_lblBarkingmadDog.gridwidth = 3;
+		gbc_lblBarkingmadDog.insets = new Insets(0, 0, 5, 0);
+		gbc_lblBarkingmadDog.gridx = 0;
+		gbc_lblBarkingmadDog.gridy = 0;
+		frmLogin.getContentPane().add(lblBarkingmadDog, gbc_lblBarkingmadDog);
+		
+		JLabel lblUsername = new JLabel("Username:");
+		GridBagConstraints gbc_lblUsername = new GridBagConstraints();
+		gbc_lblUsername.anchor = GridBagConstraints.EAST;
+		gbc_lblUsername.insets = new Insets(0, 0, 5, 5);
+		gbc_lblUsername.gridx = 0;
+		gbc_lblUsername.gridy = 2;
+		frmLogin.getContentPane().add(lblUsername, gbc_lblUsername);
+		
+		userField = new JTextField();
+		GridBagConstraints gbc_textField = new GridBagConstraints();
+		gbc_textField.insets = new Insets(0, 0, 5, 5);
+		gbc_textField.fill = GridBagConstraints.HORIZONTAL;
+		gbc_textField.gridx = 1;
+		gbc_textField.gridy = 2;
+		frmLogin.getContentPane().add(userField, gbc_textField);
+		userField.setColumns(10);
+		
+		JLabel lblPassword = new JLabel("Password:");
+		GridBagConstraints gbc_lblPassword = new GridBagConstraints();
+		gbc_lblPassword.anchor = GridBagConstraints.EAST;
+		gbc_lblPassword.insets = new Insets(0, 0, 5, 5);
+		gbc_lblPassword.gridx = 0;
+		gbc_lblPassword.gridy = 3;
+		frmLogin.getContentPane().add(lblPassword, gbc_lblPassword);
+		
+		passField = new JTextField();
+		GridBagConstraints gbc_textField_1 = new GridBagConstraints();
+		gbc_textField_1.insets = new Insets(0, 0, 5, 5);
+		gbc_textField_1.fill = GridBagConstraints.HORIZONTAL;
+		gbc_textField_1.gridx = 1;
+		gbc_textField_1.gridy = 3;
+		frmLogin.getContentPane().add(passField, gbc_textField_1);
+		passField.setColumns(10);
+	
+		JButton btnLogIn = new JButton("Log in");
+		GridBagConstraints gbc_btnLogIn = new GridBagConstraints();
+		gbc_btnLogIn.gridwidth = 3;
+		gbc_btnLogIn.gridx = 0;
+		gbc_btnLogIn.gridy = 4;
+		frmLogin.getContentPane().add(btnLogIn, gbc_btnLogIn);
+		btnLogIn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int userLength = userField.getText().length();
+				System.out.println(userField.getText().length());
+				String[] charList = {"Z"};
+				charList = new String[100];
+				int i;
+				for (i = 0; i < userLength; i++); {
+					charList[i] = userField.getText().substring(i, i + 1);
+					System.out.println(charList[i]);
+				}
+				if ((userField.getText().length()) > 0) {
+					initializeMainFrame();
+					try {
+						Thread.sleep(200);
+						frmLogin.dispose();
+					} catch (InterruptedException e1) {
+						e1.printStackTrace();
+					}
+				} else {
+					System.out.println("Nope!");
+				}
+				
+				/*
+				if (userField.getText() == "Name" || passField.getText() == "Password") {
+					JFrame popup;
+					popup = new JFrame();
+					popup.setResizable(false);
+					popup.setBounds(100, 100, 150, 120);
+					popup.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+					
+					JLabel welcomelbl = new JLabel("Welcome, " + userField.getText());
+					popup.getContentPane().add(welcomelbl);
+					popup.setVisible(true);
+				} else { 
+					JFrame popup;
+					popup = new JFrame();
+					popup.setResizable(false);
+					popup.setBounds(100, 100, 150, 120);
+					popup.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+					
+					JLabel errorlbl = new JLabel("Invalid login details!");
+					popup.getContentPane().add(errorlbl);
+					popup.setVisible(true);
+					}
+				 */
+
+			}
+		});
+	}	
+	public void initializeMainFrame() {
+		frmMain = new JFrame();
+		frmMain.setResizable(false);
+		frmMain.setBounds(100, 100, 800, 600);
+		frmMain.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		GridBagLayout gridBagLayout = new GridBagLayout();
+		gridBagLayout.columnWidths = new int[]{49, 36, 517, 36, 0};
+		gridBagLayout.rowHeights = new int[]{0, 24, 11, 37, 32, 0, 37, 0, 0, 184, 232, 12, 0};
+		gridBagLayout.columnWeights = new double[]{0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
+		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, Double.MIN_VALUE};
+		frmMain.getContentPane().setLayout(gridBagLayout);
+		frmMain.setLocationRelativeTo(frmLogin);
+		frmMain.setVisible(true);
+		
+		JLabel lblNewLabel = new JLabel("<html><body><font size = 7>.: Database Access: Search & Edit :.</font></body></html>");
+		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		GridBagConstraints gbc_lblNewLabel = new GridBagConstraints();
+		gbc_lblNewLabel.fill = GridBagConstraints.HORIZONTAL;
+		gbc_lblNewLabel.gridwidth = 4;
+		gbc_lblNewLabel.insets = new Insets(0, 0, 5, 0);
+		gbc_lblNewLabel.gridx = 0;
+		gbc_lblNewLabel.gridy = 0;
+		frmMain.getContentPane().add(lblNewLabel, gbc_lblNewLabel);
+		
+		JLabel lblSearchResults = new JLabel("Search Results:");
+		GridBagConstraints gbc_lblSearchResults = new GridBagConstraints();
+		gbc_lblSearchResults.insets = new Insets(0, 0, 5, 5);
+		gbc_lblSearchResults.gridx = 2;
+		gbc_lblSearchResults.gridy = 2;
+		frmMain.getContentPane().add(lblSearchResults, gbc_lblSearchResults);
+		
+		JLabel lblSearchFilter = new JLabel("Include filter:");
+		GridBagConstraints gbc_lblSearchFilter = new GridBagConstraints();
+		gbc_lblSearchFilter.insets = new Insets(0, 0, 5, 5);
+		gbc_lblSearchFilter.gridx = 1;
+		gbc_lblSearchFilter.gridy = 3;
+		frmMain.getContentPane().add(lblSearchFilter, gbc_lblSearchFilter);
+		
+		JList list = new JList();
+		GridBagConstraints gbc_list = new GridBagConstraints();
+		gbc_list.gridheight = 8;
+		gbc_list.insets = new Insets(0, 0, 5, 5);
+		gbc_list.fill = GridBagConstraints.BOTH;
+		gbc_list.gridx = 2;
+		gbc_list.gridy = 3;
+		frmMain.getContentPane().add(list, gbc_list);
+		
+		incFilterField = new JTextField();
+		GridBagConstraints gbc_textField = new GridBagConstraints();
+		gbc_textField.anchor = GridBagConstraints.NORTH;
+		gbc_textField.insets = new Insets(0, 0, 5, 5);
+		gbc_textField.fill = GridBagConstraints.HORIZONTAL;
+		gbc_textField.gridx = 1;
+		gbc_textField.gridy = 4;
+		frmMain.getContentPane().add(incFilterField, gbc_textField);
+		incFilterField.setColumns(10);
+		
+		JLabel lblExcludeFilter = new JLabel("Exclude filter:");
+		GridBagConstraints gbc_lblExcludeFilter = new GridBagConstraints();
+		gbc_lblExcludeFilter.insets = new Insets(0, 0, 5, 5);
+		gbc_lblExcludeFilter.gridx = 1;
+		gbc_lblExcludeFilter.gridy = 5;
+		frmMain.getContentPane().add(lblExcludeFilter, gbc_lblExcludeFilter);
+		
+		excFilterField = new JTextField();
+		GridBagConstraints gbc_textField_1 = new GridBagConstraints();
+		gbc_textField_1.anchor = GridBagConstraints.NORTH;
+		gbc_textField_1.insets = new Insets(0, 0, 5, 5);
+		gbc_textField_1.fill = GridBagConstraints.HORIZONTAL;
+		gbc_textField_1.gridx = 1;
+		gbc_textField_1.gridy = 6;
+		frmMain.getContentPane().add(excFilterField, gbc_textField_1);
+		excFilterField.setColumns(10);
+		
+		JButton btnSearch = new JButton("Search");
+		GridBagConstraints gbc_btnSearch = new GridBagConstraints();
+		gbc_btnSearch.fill = GridBagConstraints.HORIZONTAL;
+		gbc_btnSearch.insets = new Insets(0, 0, 5, 5);
+		gbc_btnSearch.gridx = 1;
+		gbc_btnSearch.gridy = 7;
+		frmMain.getContentPane().add(btnSearch, gbc_btnSearch);
+		
+		JButton btnGenerateReport = new JButton("Generate Report");
+		GridBagConstraints gbc_btnGenerateReport = new GridBagConstraints();
+		gbc_btnGenerateReport.insets = new Insets(0, 0, 5, 5);
+		gbc_btnGenerateReport.gridx = 1;
+		gbc_btnGenerateReport.gridy = 8;
+		frmMain.getContentPane().add(btnGenerateReport, gbc_btnGenerateReport);
+		
+		JButton btnEditSelection = new JButton("Edit Selection");
+		GridBagConstraints gbc_btnEditSelection = new GridBagConstraints();
+		gbc_btnEditSelection.fill = GridBagConstraints.HORIZONTAL;
+		gbc_btnEditSelection.insets = new Insets(0, 0, 5, 5);
+		gbc_btnEditSelection.gridx = 1;
+		gbc_btnEditSelection.gridy = 9;
+		frmMain.getContentPane().add(btnEditSelection, gbc_btnEditSelection);
+	}
+}
