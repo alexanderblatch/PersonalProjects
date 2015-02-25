@@ -13,12 +13,16 @@ import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import javax.swing.SwingConstants;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
+import javax.swing.JScrollPane;
 
 /**
  *
@@ -30,10 +34,15 @@ public class DogHouseDatabase {
     private JFrame frmLogin;
     public JFrame frmMain;
     public JFrame frmReport;
+    public JFrame frmAdmin;
+    public JFrame popup;
+    public JFrame frmUserEdit;
+    public JFrame frmRecordEdit;
     private JTextField userField;
     private JPasswordField passField;
     public JTextField incFilterField;
     public JTextField excFilterField;
+    public JTextField userListField;
     public boolean validUser = false;
     public boolean admin = false;
 
@@ -173,14 +182,22 @@ public class DogHouseDatabase {
                 String uName = "NyxThatNox";
                 String pWord = "Nighty-night";
                 Connection conn = DriverManager.getConnection(host, uName, pWord);
-                Statement stmt = conn.createStatement();
-                String RowQuery = "SELECT COUNT(*) As rowcount FROM User_Details";
+                Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+                String RowQuery = "SELECT * FROM User_Details ORDER BY User_ID Asc";
                 ResultSet rs1 = stmt.executeQuery(RowQuery);
-                rs1.next();
-                Integer RowNum = rs1.getInt("rowcount") + 1;
+                rs1.last();
+                Integer RowNum = rs1.getInt("User_ID") + 1;
                 String AccCreation = "INSERT INTO User_Details (User_ID, Username, Password, Access)"
                         + " VALUES (" + RowNum.toString() + ", '" + userField.getText() + "', '" + passField.getText() + "', 'User')";
                 stmt.executeUpdate(AccCreation);
+                JFrame Popup = new JFrame();
+                JLabel lbl = new JLabel("User details added: Try logging in.", SwingConstants.CENTER);
+                Popup.getContentPane().add(lbl);
+                Popup.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                Popup.setBounds(200,200,240,130);
+                Popup.setResizable(false);
+                Popup.setVisible(true);
+                Popup.setLocationRelativeTo(frmLogin);
             } catch (SQLException err) {
                 System.out.println(err.getMessage());
             }
@@ -206,13 +223,13 @@ public class DogHouseDatabase {
                 String DetailsQuery = "SELECT * FROM User_Details";
                 ResultSet rs2 = stmt.executeQuery(DetailsQuery);
                 rs2.next();
-                for (int i = 0; i < RowNum; i++) {
+                for (int i = 0; validUser != true && i < RowNum; i++) {
                     if (userField.getText().equals(rs2.getString("Username")) == true && passField.getText().equals(rs2.getString("Password")) == true) {
                         validUser = true;
-                        if (rs2.getString("Access") == "Admin") {
+                        System.out.println("Successfully matched user details!");
+                        if ("Admin".equals(rs2.getString("Access"))) {
                             admin = true;
                         }
-                        System.out.println("Successfully matched user details!");
                     }
                     rs2.next();
                 }
@@ -255,8 +272,29 @@ public class DogHouseDatabase {
         frmMain.getContentPane().setLayout(gridBagLayout);
         frmMain.setLocationRelativeTo(frmLogin);
         frmMain.setVisible(true);
+        
+        JButton btnReturn = new JButton("Logout");
+        GridBagConstraints gbc_btn = new GridBagConstraints();
+        gbc_btn.fill = GridBagConstraints.HORIZONTAL;
+        gbc_btn.insets = new Insets(0, 0, 5, 5);
+        gbc_btn.gridx = 1;
+        gbc_btn.gridy = 0;
 
-        JLabel lblNewLabel = new JLabel("<html><body><font size = 7>.: Database Access: Search & Edit :.</font></body></html>");
+        frmMain.getContentPane()
+                .add(btnReturn, gbc_btn);
+        btnReturn.addActionListener(
+                (ActionEvent e) -> {
+                    try {
+                        initializeLoginFrame();
+                        Thread.sleep(200);
+                        frmMain.dispose();
+                    } catch (InterruptedException e1) {
+                        System.out.println(e1.getMessage());
+                    }
+                }
+        );
+
+        JLabel lblNewLabel = new JLabel("<html><body><font size = 7>.: Database Access :.</font></body></html>");
         lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
         GridBagConstraints gbc_lblNewLabel = new GridBagConstraints();
         gbc_lblNewLabel.fill = GridBagConstraints.HORIZONTAL;
@@ -265,15 +303,25 @@ public class DogHouseDatabase {
         gbc_lblNewLabel.gridx = 0;
         gbc_lblNewLabel.gridy = 0;
         frmMain.getContentPane().add(lblNewLabel, gbc_lblNewLabel);
-        
+
         if (admin == true) {
             JButton btnAdminTools = new JButton("Admin Tools");
             GridBagConstraints gbc_btnAdminTools = new GridBagConstraints();
             gbc_btnAdminTools.fill = GridBagConstraints.HORIZONTAL;
             gbc_btnAdminTools.insets = new Insets(0, 0, 5, 5);
-            gbc_btnAdminTools.gridx = 0;
-            gbc_btnAdminTools.gridy = 0;
+            gbc_btnAdminTools.gridx = 1;
+            gbc_btnAdminTools.gridy = 3;
             frmMain.getContentPane().add(btnAdminTools, gbc_btnAdminTools);
+
+            btnAdminTools.addActionListener((ActionEvent e) -> {
+                try {
+                    initializeAdminFrame();
+                    Thread.sleep(200);
+                    frmMain.dispose();
+                } catch (InterruptedException e1) {
+                    System.out.println(e1.getMessage());
+                }
+            });
         }
         JLabel lblSearchResults = new JLabel("Database Contents:");
         GridBagConstraints gbc_lblSearchResults = new GridBagConstraints();
@@ -285,24 +333,14 @@ public class DogHouseDatabase {
         //Populate below list with names found in 'Dog' table + Dog ID - Requires Database Connection + Query
         DefaultListModel model = new DefaultListModel();
         JList list = new JList(model);
+        JScrollPane scrollPane = new JScrollPane(list);
         GridBagConstraints gbc_list = new GridBagConstraints();
         gbc_list.gridheight = 8;
         gbc_list.insets = new Insets(0, 0, 5, 5);
         gbc_list.fill = GridBagConstraints.BOTH;
         gbc_list.gridx = 2;
         gbc_list.gridy = 3;
-        frmMain.getContentPane().add(list, gbc_list);
-
-        //Adds qualifying condition to search function
-        incFilterField = new JTextField();
-        GridBagConstraints gbc_textField = new GridBagConstraints();
-        gbc_textField.anchor = GridBagConstraints.NORTH;
-        gbc_textField.insets = new Insets(0, 0, 5, 5);
-        gbc_textField.fill = GridBagConstraints.HORIZONTAL;
-        gbc_textField.gridx = 1;
-        gbc_textField.gridy = 4;
-        frmMain.getContentPane().add(incFilterField, gbc_textField);
-        incFilterField.setColumns(10);
+        frmMain.getContentPane().add(scrollPane, gbc_list);
 
         //Adds qualifying condition to search function
         JLabel lblFilter = new JLabel("Look for:");
@@ -331,34 +369,21 @@ public class DogHouseDatabase {
         gbc_btnSearch.gridy = 7;
         frmMain.getContentPane().add(btnSearch, gbc_btnSearch);
         btnSearch.addActionListener((ActionEvent e) -> {
-        list.setSelectedIndex(model.indexOf(excFilterField.getText()));
+            list.setSelectedIndex(model.indexOf(excFilterField.getText()));
         });
-        
+
         JButton btnGenerateReport = new JButton("Generate Report");
         GridBagConstraints gbc_btnGenerateReport = new GridBagConstraints();
         gbc_btnGenerateReport.insets = new Insets(0, 0, 5, 5);
         gbc_btnGenerateReport.gridx = 1;
         gbc_btnGenerateReport.gridy = 8;
         frmMain.getContentPane().add(btnGenerateReport, gbc_btnGenerateReport);
-
-        JButton btnEditSelection = new JButton("Edit Selection");
-        GridBagConstraints gbc_btnEditSelection = new GridBagConstraints();
-        gbc_btnEditSelection.fill = GridBagConstraints.HORIZONTAL;
-        gbc_btnEditSelection.insets = new Insets(0, 0, 5, 5);
-        gbc_btnEditSelection.gridx = 1;
-        gbc_btnEditSelection.gridy = 9;
-        frmMain.getContentPane().add(btnEditSelection, gbc_btnEditSelection);
-
-        JButton btnConnect = new JButton("Connect");
-        GridBagConstraints gbc_btnConnect = new GridBagConstraints();
-        gbc_btnConnect.fill = GridBagConstraints.HORIZONTAL;
-        gbc_btnConnect.insets = new Insets(0, 0, 5, 5);
-        gbc_btnConnect.gridx = 1;
-        gbc_btnConnect.gridy = 3;
-        frmMain.getContentPane().add(btnConnect, gbc_btnConnect);
-
-        btnConnect.addActionListener((ActionEvent e) -> {
-            try {
+                
+        btnGenerateReport.addActionListener((ActionEvent e) -> {
+            int selectionIndex = list.getSelectedIndex();
+            initializeReportFrame(selectionIndex);
+        });
+        try {
                 model.clear();
                 String host = "jdbc:derby://localhost:1527/DHDB";
                 String uName = "NyxThatNox";
@@ -388,11 +413,7 @@ public class DogHouseDatabase {
                 popup.setVisible(true);
                 System.out.println(err.getMessage());
             }
-        });
-        btnGenerateReport.addActionListener((ActionEvent e) -> {
-            int selectionIndex = list.getSelectedIndex();
-            initializeReportFrame(selectionIndex);
-        });
+        
     }
 
     public void initializeReportFrame(int selectionIndex) {
@@ -634,4 +655,367 @@ public class DogHouseDatabase {
         gbc_txtVetTel.gridy = 9;
         frmReport.getContentPane().add(txtVetTel, gbc_txtVetTel);
     }
+
+    public void initializeAdminFrame() {
+
+        frmAdmin = new JFrame();
+
+        frmAdmin.setResizable(
+                false);
+        frmAdmin.setBounds(
+                100, 100, 800, 600);
+        frmAdmin.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        GridBagLayout gridBagLayout = new GridBagLayout();
+        gridBagLayout.columnWidths = new int[]{49, 36, 517, 36, 49};
+        gridBagLayout.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+        gridBagLayout.columnWeights = new double[]{0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
+        gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0.0, 0.0, Double.MIN_VALUE};
+
+        frmAdmin.getContentPane()
+                .setLayout(gridBagLayout);
+        frmAdmin.setLocationRelativeTo(frmMain);
+
+        frmAdmin.setVisible(
+                true);
+
+        JLabel lblNewLabel = new JLabel("<html><body><font size = 7>.: Administrative Tools :.</font></body></html>");
+
+        lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        GridBagConstraints gbc_lblNewLabel = new GridBagConstraints();
+        gbc_lblNewLabel.fill = GridBagConstraints.HORIZONTAL;
+        gbc_lblNewLabel.gridwidth = 4;
+        gbc_lblNewLabel.insets = new Insets(0, 0, 5, 0);
+        gbc_lblNewLabel.gridx = 0;
+        gbc_lblNewLabel.gridy = 0;
+
+        frmAdmin.getContentPane()
+                .add(lblNewLabel, gbc_lblNewLabel);
+
+        JLabel lblUserEdits = new JLabel("Edit Users:");
+        GridBagConstraints gbc_lbl = new GridBagConstraints();
+        gbc_lbl.insets = new Insets(0, 0, 5, 5);
+        gbc_lbl.gridx = 1;
+        gbc_lbl.gridy = 1;
+
+        frmAdmin.getContentPane()
+                .add(lblUserEdits, gbc_lbl);
+        
+
+        JButton btnReturn = new JButton("Return");
+        GridBagConstraints gbc_btn = new GridBagConstraints();
+        gbc_btn.fill = GridBagConstraints.HORIZONTAL;
+        gbc_btn.insets = new Insets(0, 0, 5, 5);
+        gbc_btn.gridx = 1;
+        gbc_btn.gridy = 0;
+
+        frmAdmin.getContentPane()
+                .add(btnReturn, gbc_btn);
+        btnReturn.addActionListener(
+                (ActionEvent e) -> {
+                    try {
+                        initializeMainFrame();
+                        Thread.sleep(200);
+                        frmAdmin.dispose();
+                    } catch (InterruptedException e1) {
+                        System.out.println(e1.getMessage());
+                    }
+                }
+        );
+
+        DefaultListModel model1 = new DefaultListModel();
+        JList Userlist = new JList(model1);
+        JScrollPane userScroll = new JScrollPane(Userlist);
+        GridBagConstraints gbc_list = new GridBagConstraints();
+        gbc_list.gridheight = 3;
+        gbc_list.insets = new Insets(0, 0, 5, 5);
+        gbc_list.fill = GridBagConstraints.HORIZONTAL;
+        gbc_list.gridx = 2;
+        gbc_list.gridy = 2;
+
+        frmAdmin.getContentPane()
+                .add(userScroll, gbc_list);
+
+        JLabel lblRecordEdits = new JLabel("Edit DB Records:");
+        gbc_lbl.gridx = 1;
+        gbc_lbl.gridy = 8;
+
+        frmAdmin.getContentPane()
+                .add(lblRecordEdits, gbc_lbl);
+
+        DefaultListModel model2 = new DefaultListModel();
+        JList Recordlist = new JList(model2);
+        JScrollPane recordScroll = new JScrollPane(Recordlist);
+        gbc_list.gridheight = 3;
+        gbc_list.insets = new Insets(0, 0, 5, 5);
+        gbc_list.fill = GridBagConstraints.HORIZONTAL;
+        gbc_list.gridy = 9;
+
+        frmAdmin.getContentPane()
+                .add(recordScroll, gbc_list);
+
+        JButton btnUserEdit = new JButton("Edit User");
+        gbc_btn.fill = GridBagConstraints.HORIZONTAL;
+        gbc_btn.insets = new Insets(0, 0, 5, 5);
+        gbc_btn.gridx = 1;
+        gbc_btn.gridy = 2;
+
+        frmAdmin.getContentPane()
+                .add(btnUserEdit, gbc_btn);
+                
+        btnUserEdit.addActionListener((ActionEvent u) -> {
+        Integer i = Userlist.getSelectedIndex() + 1;
+        initializeUserEditFrame(i);
+        });
+
+        JButton btnUserDelete = new JButton("Delete User");
+        gbc_btn.fill = GridBagConstraints.HORIZONTAL;
+        gbc_btn.insets = new Insets(0, 0, 5, 5);
+        gbc_btn.gridx = 1;
+        gbc_btn.gridy = 3;
+
+        frmAdmin.getContentPane().add(btnUserDelete, gbc_btn);
+
+        JButton btnRecordEdit = new JButton("Edit Record");
+        gbc_btn.fill = GridBagConstraints.HORIZONTAL;
+        gbc_btn.insets = new Insets(0, 0, 5, 5);
+        gbc_btn.gridx = 1;
+        gbc_btn.gridy = 9;
+
+        frmAdmin.getContentPane().add(btnRecordEdit, gbc_btn);
+
+        JButton btnRecordDelete = new JButton("Delete Record");
+        gbc_btn.fill = GridBagConstraints.HORIZONTAL;
+        gbc_btn.insets = new Insets(0, 0, 5, 5);
+        gbc_btn.gridx = 1;
+        gbc_btn.gridy = 10;
+
+        frmAdmin.getContentPane().add(btnRecordDelete, gbc_btn);
+
+        JButton btnRecordAdd = new JButton("Add Record");
+        gbc_btn.fill = GridBagConstraints.HORIZONTAL;
+        gbc_btn.insets = new Insets(0, 0, 5, 5);
+        gbc_btn.gridx = 1;
+        gbc_btn.gridy = 11;
+        frmAdmin.getContentPane().add(btnRecordAdd, gbc_btn);
+
+        try {
+            String host = "jdbc:derby://localhost:1527/DHDB";
+            String uName = "NyxThatNox";
+            String pWord = "Nighty-night";
+            Connection conn = DriverManager.getConnection(host, uName, pWord);
+            Statement stmt = conn.createStatement();
+            String Query1 = "Select * FROM User_Details";
+            String Query2 = "Select * FROM Dog";
+            String RowQuery1 = "SELECT COUNT(*) As rowcount FROM User_Details";
+            String RowQuery2 = "SELECT COUNT(*) As rowcount FROM Dog";
+            ResultSet rs1 = stmt.executeQuery(RowQuery1);
+            rs1.next();
+            int RowNum = rs1.getInt("rowcount");
+            ResultSet rs2 = stmt.executeQuery(Query1);
+            for (int i = 0; i < RowNum; i++) {
+                rs2.next();
+                model1.addElement(rs2.getString("Username"));
+            }
+            ResultSet rs3 = stmt.executeQuery(RowQuery2);
+            rs3.next();
+            RowNum = rs3.getInt("rowcount");
+            ResultSet rs4 = stmt.executeQuery(Query2);
+            for (int i = 0; i < RowNum; i++) {
+                rs4.next();
+                model2.addElement(rs4.getString("Pet_Name"));
+            }
+            btnUserDelete.addActionListener(new ActionListener() {
+
+                public void actionPerformed(ActionEvent e) {
+                    popup = new JFrame();
+                    popup.setBounds(100, 100, 450, 300);
+                    popup.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                    GridBagLayout gridBagLayout = new GridBagLayout();
+                    gridBagLayout.columnWidths = new int[]{216, 216, 0};
+                    gridBagLayout.rowHeights = new int[]{29, 76, 182, 0};
+                    gridBagLayout.columnWeights = new double[]{0.0, 0.0, Double.MIN_VALUE};
+                    gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, Double.MIN_VALUE};
+                    popup.getContentPane().setLayout(gridBagLayout);
+
+                    JLabel errorlbl = new JLabel("Are you sure you want to permanently delete this user?");
+                    GridBagConstraints gbc_lblNewLabel = new GridBagConstraints();
+                    gbc_lblNewLabel.gridwidth = 2;
+                    gbc_lblNewLabel.insets = new Insets(0, 0, 5, 5);
+                    gbc_lblNewLabel.gridx = 0;
+                    gbc_lblNewLabel.gridy = 1;
+                    popup.getContentPane().add(errorlbl, gbc_lblNewLabel);
+
+                    JButton yesDel = new JButton("Yes");
+                    GridBagConstraints gbc_btnNewButton = new GridBagConstraints();
+                    gbc_btnNewButton.insets = new Insets(0, 0, 0, 5);
+                    gbc_btnNewButton.gridx = 0;
+                    gbc_btnNewButton.gridy = 2;
+                    popup.getContentPane().add(yesDel, gbc_btnNewButton);
+
+                    JButton noDel = new JButton("No");
+                    GridBagConstraints gbc_btnNewButton_1 = new GridBagConstraints();
+                    gbc_btnNewButton_1.gridx = 1;
+                    gbc_btnNewButton_1.gridy = 2;
+                    popup.getContentPane().add(noDel, gbc_btnNewButton_1);
+                    popup.setLocationRelativeTo(frmLogin);
+                    popup.setVisible(true);
+                    yesDel.addActionListener(
+                        (ActionEvent y) -> {
+                            Integer Index = Userlist.getSelectedIndex() + 1;
+                            try {
+                                ResultSet rs2 = stmt.executeQuery("SELECT * FROM User_Details");
+                                int i = 0;
+                                while (i != Index) {
+                                    rs2.next();
+                                    i++;
+                                }
+                                Index = rs2.getInt("User_ID");
+                                stmt.executeUpdate("DELETE FROM User_Details WHERE User_ID = " + Index.toString());
+                                System.out.println("Record Deleted!");
+                                Thread.sleep(200);
+                            } catch (SQLException | InterruptedException ex) {
+                                System.out.println(ex.getMessage());
+                            }
+                            popup.dispose();
+                        }
+                    );
+                    noDel.addActionListener (
+                    (ActionEvent z) -> {
+                        popup.dispose();
+                    }
+                    );
+                }
+            });
+        } catch (SQLException err) {
+            System.out.println("There was an error fetching records.");
+            System.out.println(err.getMessage());
+        }
+        
+    }
+    
+    public void initializeUserEditFrame(Integer i) {
+        try {
+                String userID = i.toString();
+                String host = "jdbc:derby://localhost:1527/DHDB";
+                String uName = "NyxThatNox";
+                String pWord = "Nighty-night";
+                Connection conn = DriverManager.getConnection(host, uName, pWord);
+                Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+                String Query = "SELECT * FROM User_Details WHERE User_ID = " + userID;
+                ResultSet rs1 = stmt.executeQuery(Query);
+                rs1.next();
+        frmUserEdit = new JFrame();
+		frmUserEdit.setBounds(100, 100, 600, 300);
+		frmUserEdit.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		GridBagLayout gridBagLayout = new GridBagLayout();
+		gridBagLayout.columnWidths = new int[]{0, 0, 0, 0, 0, 0, 0};
+		gridBagLayout.rowHeights = new int[]{81, 86, 92, 0};
+		gridBagLayout.columnWeights = new double[]{0.0, 1.0, 0.0, 1.0, 0.0, 1.0, Double.MIN_VALUE};
+		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, Double.MIN_VALUE};
+		frmUserEdit.getContentPane().setLayout(gridBagLayout);
+                frmUserEdit.setLocationRelativeTo(frmAdmin);
+		
+		JLabel lblUserDetail = new JLabel("<html><body><font size = 7>.: User Detail Editing :.</font></body></html>");
+		GridBagConstraints gbc_lblUserDetail = new GridBagConstraints();
+		gbc_lblUserDetail.gridwidth = 6;
+		gbc_lblUserDetail.insets = new Insets(0, 0, 5, 0);
+		gbc_lblUserDetail.gridx = 0;
+		gbc_lblUserDetail.gridy = 0;
+		frmUserEdit.getContentPane().add(lblUserDetail, gbc_lblUserDetail);
+		
+		JLabel lblUsername = new JLabel("Username:");
+		GridBagConstraints gbc_lblUsername = new GridBagConstraints();
+		gbc_lblUsername.insets = new Insets(0, 0, 5, 5);
+		gbc_lblUsername.anchor = GridBagConstraints.EAST;
+		gbc_lblUsername.gridx = 0;
+		gbc_lblUsername.gridy = 1;
+		frmUserEdit.getContentPane().add(lblUsername, gbc_lblUsername);
+		
+		JTextField userField = new JTextField(rs1.getString("Username"));
+		GridBagConstraints gbc_textField = new GridBagConstraints();
+		gbc_textField.insets = new Insets(0, 0, 5, 5);
+		gbc_textField.fill = GridBagConstraints.HORIZONTAL;
+		gbc_textField.gridx = 1;
+		gbc_textField.gridy = 1;
+		frmUserEdit.getContentPane().add(userField, gbc_textField);
+		userField.setColumns(10);
+		
+		JLabel lblPassword = new JLabel("Password:");
+		GridBagConstraints gbc_lblPassword = new GridBagConstraints();
+		gbc_lblPassword.anchor = GridBagConstraints.EAST;
+		gbc_lblPassword.insets = new Insets(0, 0, 5, 5);
+		gbc_lblPassword.gridx = 2;
+		gbc_lblPassword.gridy = 1;
+		frmUserEdit.getContentPane().add(lblPassword, gbc_lblPassword);
+		
+		JTextField PassField = new JTextField(rs1.getString("Password"));
+		GridBagConstraints gbc_textField_1 = new GridBagConstraints();
+		gbc_textField_1.insets = new Insets(0, 0, 5, 5);
+		gbc_textField_1.fill = GridBagConstraints.HORIZONTAL;
+		gbc_textField_1.gridx = 3;
+		gbc_textField_1.gridy = 1;
+		frmUserEdit.getContentPane().add(PassField, gbc_textField_1);
+		PassField.setColumns(10);
+		
+		JLabel lblAccess = new JLabel("Access:");
+		GridBagConstraints gbc_lblAccess = new GridBagConstraints();
+		gbc_lblAccess.anchor = GridBagConstraints.EAST;
+		gbc_lblAccess.insets = new Insets(0, 0, 5, 5);
+		gbc_lblAccess.gridx = 4;
+		gbc_lblAccess.gridy = 1;
+		frmUserEdit.getContentPane().add(lblAccess, gbc_lblAccess);
+		
+		JTextField accessField = new JTextField(rs1.getString("Access"));
+		GridBagConstraints gbc_textField_2 = new GridBagConstraints();
+		gbc_textField_2.insets = new Insets(0, 0, 5, 0);
+		gbc_textField_2.fill = GridBagConstraints.HORIZONTAL;
+		gbc_textField_2.gridx = 5;
+		gbc_textField_2.gridy = 1;
+		frmUserEdit.getContentPane().add(accessField, gbc_textField_2);
+		accessField.setColumns(10);
+		
+		JButton btnConfirm = new JButton("Confirm");
+		btnConfirm.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+                            try {
+                                stmt.executeUpdate("UPDATE User_Details SET Username = '" 
+                                        + userField.getText()
+                                        + "', Password = '"
+                                        + PassField.getText()
+                                        + "', Access = '"
+                                        + accessField.getText()
+                                        + "' WHERE User_ID = " + userID);
+                                frmUserEdit.dispose();
+                            } catch (SQLException ex) {
+                                System.out.println(ex.getMessage());
+                            }
+                        }
+		});
+		GridBagConstraints gbc_btnNewButton = new GridBagConstraints();
+		gbc_btnNewButton.gridwidth = 3;
+		gbc_btnNewButton.insets = new Insets(0, 0, 0, 5);
+		gbc_btnNewButton.gridx = 0;
+		gbc_btnNewButton.gridy = 2;
+		frmUserEdit.getContentPane().add(btnConfirm, gbc_btnNewButton);
+		
+		JButton btnCancel = new JButton("Cancel");
+		GridBagConstraints gbc_btnNewButton_1 = new GridBagConstraints();
+		gbc_btnNewButton_1.gridwidth = 3;
+		gbc_btnNewButton_1.insets = new Insets(0, 0, 0, 5);
+		gbc_btnNewButton_1.gridx = 3;
+		gbc_btnNewButton_1.gridy = 2;
+		frmUserEdit.getContentPane().add(btnCancel, gbc_btnNewButton_1);
+                
+                btnCancel.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        frmUserEdit.dispose();
+                    }
+                });
+                
+                frmUserEdit.setVisible(true);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
 }
+    
