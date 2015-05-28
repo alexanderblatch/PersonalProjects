@@ -1,0 +1,288 @@
+package QA;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+
+public class Book {
+
+	private String title;
+	private String author;
+	private int pages;
+	private double price;
+	private boolean checkedIn;
+	private final static String FILENAME = "C:\\Users\\blatcha\\Desktop\\Java\\Books.txt";
+	static ArrayList<Book> library = new ArrayList<Book>();
+
+	public Book(String title, String author, int pages, double price,
+			boolean checkedIn) {
+		if (isValid(title, author, pages, price)) {
+			this.setTitle(title);
+			this.setAuthor(author);
+			this.setPages(pages);
+			this.setPrice(price);
+			this.setCheckedIn(checkedIn);
+		}
+	}
+
+	private static boolean isValid(String title, String author, int pages,
+			double price) {
+		if (validTitle(title) && validAuthor(author) && validPages(pages)
+				&& validPrice(price)) {
+			return true;
+		} else {
+			System.out.println("Invalid book.");
+			return false;
+		}
+	}
+
+	public static boolean validTitle(String title) {
+		if (title != null) {
+			return true;
+		} else {
+			System.out.println("Invalid title.");
+			return false;
+		}
+	}
+
+	public static boolean validAuthor(String author) {
+		if (author != null) {
+			return true;
+		} else {
+			System.out.println("Invalid author.");
+			return false;
+		}
+	}
+
+	public static boolean validPages(int pages) {
+		if (pages > 0) {
+			return true;
+		} else {
+			System.out.println("Invalid pages.");
+			return false;
+		}
+	}
+
+	public static boolean validPrice(double price) {
+		if (price > 0) {
+			return true;
+		} else {
+			System.out.println("Invalid price.");
+			return false;
+		}
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getAuthor() {
+		return author;
+	}
+
+	public void setAuthor(String author) {
+		this.author = author;
+	}
+
+	public int getPages() {
+		return pages;
+	}
+
+	public void setPages(int pages) {
+		this.pages = pages;
+	}
+
+	public double getPrice() {
+		return price;
+	}
+
+	public void setPrice(double price) {
+		this.price = price;
+	}
+
+	public boolean isCheckedIn() {
+		return checkedIn;
+	}
+
+	public void setCheckedIn(boolean checkedIn) {
+		this.checkedIn = checkedIn;
+	}
+
+	public String toString() {
+		return String
+				.format("Title: %s, Author: %s, No. Pages: %d, Price: £%.02f, Checked In? %s",
+						this.getTitle(), this.getAuthor(), this.getPages(),
+						this.getPrice(), (this.checkedIn ? "Yes." : "No."));
+	}
+
+	public static String printLibrary() {
+		String libraryContents = "";
+		for (int i = 0; i < library.size(); i++) {
+			libraryContents = libraryContents.concat(library.get(i).toString()
+					+ "\n");
+		}
+		return libraryContents;
+	}
+
+	public void checkIn() {
+		if (this.checkedIn == false) {
+			System.out.println("Book checked in sucessfully.");
+			this.setCheckedIn(true);
+		} else {
+			System.out.println("Book already checked in!");
+		}
+	}
+
+	public void checkOut() {
+		if (this.checkedIn == true) {
+			System.out.println("Book checked out sucessfully.");
+			this.setCheckedIn(false);
+		} else {
+			System.out.println("Book already checked out!");
+		}
+	}
+
+	public static void openFile() {
+		try {
+
+			int lineCount = 0;
+
+			String tempTitle = "N/A";
+			String tempAuthor;
+			int tempPages;
+			double tempPrice;
+			boolean tempCheckedIn;
+
+			BufferedReader count = new BufferedReader(new FileReader(new File(
+					FILENAME)));
+			BufferedReader in = new BufferedReader(new FileReader(new File(
+					FILENAME)));
+			System.out.println("File opened by reader...");
+
+			while (tempTitle != null) {
+				tempTitle = count.readLine();
+				lineCount++;
+			}
+			lineCount -= 1;
+			count.close();
+
+			for (int i = 0; i < lineCount; i += 5) {
+				tempTitle = in.readLine();
+				tempAuthor = in.readLine();
+				tempPages = Integer.parseInt(in.readLine());
+				tempPrice = Double.parseDouble(in.readLine());
+				tempCheckedIn = Boolean.parseBoolean(in.readLine());
+				System.out.println("Book read from file...");
+				library.add(new Book(tempTitle, tempAuthor, tempPages,
+						tempPrice, tempCheckedIn));
+			}
+			in.close();
+			System.out.println("Finished reading.");
+
+		} catch (IOException e) {
+			System.out.println("Error reading file!");
+		}
+	}
+
+	private static void saveFile() {
+		try {
+
+			int j = 0;
+
+			PrintWriter out = new PrintWriter(new BufferedWriter(
+					new FileWriter(FILENAME)));
+			System.out.println("File opened by writer...");
+
+			for (int i = 0; i < (library.size() * 5); i += 5) {
+				out.println(library.get(j).getTitle());
+				out.println(library.get(j).getAuthor());
+				out.println(String.valueOf(library.get(j).getPages()));
+				out.println(String.valueOf(library.get(j).getPrice()));
+				out.println(String.valueOf(library.get(j).isCheckedIn()));
+				j++;
+				System.out.println("Book written to file...");
+			}
+			out.close();
+			System.out.println("Finished writing.");
+
+		} catch (IOException e) {
+			System.out.println("Error writing to file!");
+		}
+	}
+
+	public static void addBook(String title, String author, int pages,
+			double price, boolean checkedIn) {
+
+		boolean duplicate = false;
+
+		for (int i = 0; i < library.size(); i++) {
+			if (library.get(i).getTitle().equals(title)) {
+				duplicate = true;
+			}
+		}
+
+		if (duplicate == false && isValid(title, author, pages, price)) {
+			library.add(new Book(title, author, pages, price, checkedIn));
+			System.out.println("Book added succesfully...");
+			Book.saveFile();
+		} else {
+			System.out.println("Book addition failed; Duplicate book/Invalid book...");
+		}
+
+	}
+
+	public static void deleteBook(String title) {
+
+		boolean found = false;
+
+		for (int i = 0; i < library.size(); i++) {
+			if (library.get(i).getTitle().equals(title)) {
+				library.remove(i);
+				found = true;
+			}
+		}
+
+		if (found == true) {
+			System.out.println("Book deleted successfully...");
+			Book.saveFile();
+		} else {
+			System.out.println("Deletion failed; Book not found...");
+		}
+
+	}
+
+	public void editBook(String title, String newTitle, String newAuthor,
+			int newPages, double newPrice, boolean newCheckedIn) {
+
+		int index = -1;
+
+		for (int i = 0; i < library.size(); i++) {
+			if (library.get(i).getTitle() == title) {
+				index = i;
+			}
+		}
+
+		if (index != -1) {
+			library.get(index).setTitle(newTitle);
+			library.get(index).setAuthor(newAuthor);
+			library.get(index).setPages(newPages);
+			library.get(index).setPrice(newPrice);
+			library.get(index).setCheckedIn(newCheckedIn);
+			Book.saveFile();
+			System.out.println("Book " + index + " updated successfully.");
+		} else {
+			System.out.println("Edit failed; Book not found...");
+		}
+
+	}
+
+}
